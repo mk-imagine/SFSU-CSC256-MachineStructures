@@ -40,42 +40,51 @@
 	# i counter	    --> $t4
 main:
 	
-	li	$s0,	0		# sum = 0
-	la	$s1,	sumarr		# address of sumarr
-	li	$s2,	0		# int rev = 0
-	li	$s3,	45689		# int num = 45689
-	li	$s4,	1		# int isPalindrome = 1
-	la	$s5,	arr		# address of arr
-	li	$s6,	0		# int beg = 0
-	li	$s7,	8		# int end = 8
+	li	$s0,	0			# sum = 0
+	la	$s1,	sumarr			# address of sumarr
+	li	$s2,	0			# int rev = 0
+	li	$s3,	45689			# int num = 45689
+	li	$s4,	1			# int isPalindrome = 1
+	la	$s5,	arr			# address of arr
+	li	$s6,	0			# int beg = 0
+	li	$s7,	32			# int end = 32
 	
-	li	$t0,	0		# i = 0
-	li	$t1,	-1		# int d = -1
-	li	$t2,	10		# 10
-	li	$t3,	100		# 100
+	li	$t0,	0			# i = 0
+	li	$t1,	-1			# int d = -1
+	li	$t2,	10			# 10
+	li	$t3,	100			# 100
 
 sumarrloop:
-	bge	$t0,	$t2,	numloop	# for(i = 0; i < size; i++) -> if(i >= size) jump numloop
-	la	$t4,	($s1)		# temp = summarr[i]
-	add	$s0,	$s0,	$t4	# sum = sum + temp
-	add	$s1,	$s1,	8	# i++
-	j	summarrloop
+	add	$t4,	$s1,	$t0		# address of sumarr + index incrementation (4)
+	lw	$t5,	($t4)			# load contents of memory address $t4 into $t5
+	add	$s0,	$s0,	$t5		# sum = sum + summarr[i]
+	addi	$t0,	$t0,	4		# increment i by 1 word (32 bits or 4 bytes)
+	blt	$t0,	40,	sumarrloop	# if(i < 40) jump sumarrloop (10x 4 byte words)
 	
 numloop:
-	ble	$s3,	0,	numout	# while(num > 0) -> if(num <= 0) jump numout
-	rem	$t1,	$s3,	$t2	# d = num % 10
-	mul	$s2,	$s2,	$t2	# rev = rev * 10
-	add	$s2,	$s2,	$t1	# rev = rev + d
-	div	$s3,	$s3,	$t2	# num = num / 10
+	ble	$s3,	0,	numout		# if num <= 0, jump numout
+	rem	$t1,	$s3,	10		# d = num % 10
+	mul	$s2,	$s2,	10		# rev = rev * 10
+	add	$s2,	$s2,	$t1		# rev = rev + d
+	div	$s3,	$s3,	10		# num = num / 10
 	j	numloop
 
-numout:	
+numout:
+	add	$s6,	$s6,	$s5		# address of arr[beg] stored in $s6
+	add	$s7,	$s7,	$s5		# address of arr[end] stored in $s7
 	
-
 begendloop:
-	bge	$s6,	$s7,	out2	# while(beg < end) -> if(beg >= end) jump out2
+	bge	$s6,	$s7,	exit		# while(beg < end) -> if(beg >= end) jump exit
+	lw	$t4,	($s6)			# load contents of arr[beg] into $t4
+	lw	$t5,	($s7)			# load contents of arr[end] into $t5
+	beq	$t4,	$t5	increment 	# if arr[beg] == arr[end], jump to increment
+	li	$s4,	-1			# isPalindrome = -1
+	j	exit
 	
-if
+increment:
+	addi	$s6,	$s6,	4		# beg = beg + 4
+	addi	$s7,	$s7,	-4		# end = end - 4
+	j	begendloop
 	
 exit:
 	la   	$a0, 	sumlbl    	# puts sumlbl into arg0 (a0 register) for cout
