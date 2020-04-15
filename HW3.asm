@@ -77,15 +77,14 @@ begendloop:
 	bge	$s6,	$s7,	exit		# while(beg < end) -> if(beg >= end) jump exit
 	lw	$t4,	($s6)			# load contents of arr[beg] into $t4
 	lw	$t5,	($s7)			# load contents of arr[end] into $t5
-	beq	$t4,	$t5	increment 	# if arr[beg] == arr[end], jump to increment
-	li	$s4,	-1			# isPalindrome = -1
-	j	exit
-	
-increment:
+	bne	$t4,	$t5	notpalindrome 	# if arr[beg] != arr[end], jump to notpalindrome
 	addi	$s6,	$s6,	4		# beg = beg + 4
 	addi	$s7,	$s7,	-4		# end = end - 4
 	j	begendloop
 	
+notpalindrome:
+	li	$s4,	-1			# isPalindrome = -1
+
 exit:
 	la   	$a0, 	sumlbl    	# puts sumlbl into arg0 (a0 register) for cout
 	addi 	$v0, 	$0, 	4     	# puts 4 in v0 which denotes we are printing a string
