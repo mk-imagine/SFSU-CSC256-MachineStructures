@@ -4,7 +4,7 @@
 	calc:		.asciiz "\nCalculated values:"
 	enterx:		.asciiz "Enter initial x value: "
 	entery:		.asciiz "Enter initial y value: "
-	
+	againtext:	.asciiz "\n\nRun again (1: Yes, 0: No)? "
 	.text
 	
 	li	$t1,	5
@@ -52,6 +52,13 @@ disp:	li	$v0,	4
 	li	$v0,	1
 	move	$a0,	$s2
 	syscall
+
+again:	li	$v0,	4
+	la	$a0,	againtext
+	syscall
+	li	$v0,	5
+	syscall
+	bgt	$v0,	$0,	main
 
 exit:	li	$v0,	10
 	syscall
